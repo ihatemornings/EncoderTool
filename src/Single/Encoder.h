@@ -37,11 +37,11 @@ namespace EncoderTool
         pinMode(pinA, inputMode);
         pinMode(pinB, inputMode);
 
-        attachInterruptEx(pinA,[](Encoder* THIS){THIS->update(digitalReadFast(THIS->pinA), digitalReadFast(THIS->pinB));}, this, CHANGE);
-        attachInterruptEx(pinB,[](Encoder* THIS){THIS->update(digitalReadFast(THIS->pinA), digitalReadFast(THIS->pinB));}, this, CHANGE);
+        attachInterruptEx(pinA,[](Encoder* THIS){THIS->update(d_read(THIS->pinA), d_read(THIS->pinB));}, this, CHANGE);
+        attachInterruptEx(pinB,[](Encoder* THIS){THIS->update(d_read(THIS->pinA), d_read(THIS->pinB));}, this, CHANGE);
 
         setCountMode(countMode);
-        EncoderBase::begin(digitalReadFast(pinA), digitalReadFast(pinB)); // set start state
+        EncoderBase::begin(d_read(pinA), d_read(pinB)); // set start state
     }
 
     Encoder::~Encoder()

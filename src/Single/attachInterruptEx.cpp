@@ -1,7 +1,7 @@
-#include "attachInterruptEx.h"
-#include "core_pins.h"
 #include <array>
 #include <utility>
+#include "attachInterruptEx.h"
+#include "Arduino.h"
 
 using namespace std;
 
@@ -12,12 +12,10 @@ namespace EncoderTool
     // Instead,we generate an array of void(*)() relay functions to attach to the pin interrupts. Those relays will invoke the actual callbacks.
     // see https://stackoverflow.com/q/63730007/1842762
 
-
     // ! We don't use <std::function> here (EncoderTool) to allow usage from smaller MCUs like TeensyLC !
 
-
-    cb_t callbacks[NUM_DIGITAL_PINS];  // storage for the callback functions
-    state_t states[NUM_DIGITAL_PINS];  // storage for the corresponding state variables
+    cb_t callbacks[NUM_DIGITAL_PINS]; // storage for the callback functions
+    state_t states[NUM_DIGITAL_PINS]; // storage for the corresponding state variables
 
     template <unsigned nr>
     constexpr void relay()
@@ -32,7 +30,6 @@ namespace EncoderTool
     }
 
     constexpr auto relays = MakeRelays(make_index_sequence<NUM_DIGITAL_PINS>{});
-
 
     void attachInterruptEx(unsigned pin, cb_t callback, state_t state, int mode)
     {

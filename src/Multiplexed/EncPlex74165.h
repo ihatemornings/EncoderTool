@@ -3,7 +3,8 @@
 #include "../delay.h"
 #include "Bounce2.h"
 #include "EncPlexBase.h"
-#include "core_pins.h"
+#include "Arduino.h"
+#include <initializer_list>
 
 namespace EncoderTool
 {
@@ -30,10 +31,16 @@ namespace EncoderTool
 
     EncPlex74165::~EncPlex74165()
     {
-        for (unsigned pin : {A, B, Btn, LD, CLK})
-        {
-            pinMode(pin, INPUT_DISABLE);
-        };
+        pinMode(A, INPUT);
+        pinMode(B, INPUT);
+        pinMode(Btn, INPUT);
+        pinMode(LD, INPUT);
+        pinMode(CLK, INPUT);
+        
+        // for (unsigned pin : {A, B, Btn, LD, CLK})
+        // {
+        //     pinMode(pin, INPUT);
+        // };
     }
 
     void EncPlex74165::begin(allCallback_t cb, CountMode mode)
@@ -49,25 +56,25 @@ namespace EncoderTool
         for (uint8_t pin : {A, B, Btn}) { pinMode(pin, INPUT); }
         for (uint8_t pin : {LD, CLK}) { pinMode(pin, OUTPUT); }
 
-        digitalWriteFast(LD, HIGH); // active low
+        d_write(LD, HIGH); // active low
         delayMicroseconds(1);
 
         // load current values to shift register
-        digitalWriteFast(LD, LOW);
+        d_write(LD, LOW);
         delay50ns();
         delay50ns();
         delay50ns();
-        digitalWriteFast(LD, HIGH);
+        d_write(LD, HIGH);
 
         // first values are available directly after loading
-        encoders[0].begin(digitalReadFast(A), digitalReadFast(B));
+        encoders[0].begin(d_read(A), d_read(B));
 
         for (unsigned i = 1; i < encoderCount; i++) // shift in the the rest of the encoders
         {
-            digitalWriteFast(CLK, HIGH);
+            d_write(CLK, HIGH);
             delay50ns();
-            encoders[i].begin(digitalReadFast(A), digitalReadFast(B));
-            digitalWriteFast(CLK, LOW);
+            encoders[i].begin(d_read(A), d_read(B));
+            d_write(CLK, LOW);
             delay50ns();
         }
     }
@@ -75,17 +82,17 @@ namespace EncoderTool
     void EncPlex74165::tick()
     {
         // load current values to shift register
-        digitalWriteFast(LD, LOW);
+        d_write(LD, LOW);
         delay50ns();
         delay50ns();
         delay50ns();
-        digitalWriteFast(LD, HIGH);
+        d_write(LD, HIGH);
 
         // first values are available directly after loading
 
-        int a = digitalReadFast(A);
-        int b = digitalReadFast(B);
-        int btn = Btn != UINT32_MAX ? digitalReadFast(Btn) : LOW;
+        int a = d_read(A);
+        int b = d_read(B);
+        int btn = Btn != UINT32_MAX ? d_read(Btn) : LOW;
 
         int delta = encoders[0].update(a, b, btn);
 
@@ -95,14 +102,14 @@ namespace EncoderTool
         }
         for (unsigned i = 1; i < encoderCount; i++) // shift in the the rest of the encoders
         {
-            digitalWriteFast(CLK, HIGH);
+            d_write(CLK, HIGH);
             delay50ns();
-            int delta = encoders[i].update(digitalReadFast(A), digitalReadFast(B), Btn != UINT32_MAX ? digitalReadFast(Btn) : LOW);
+            int delta = encoders[i].update(d_read(A), d_read(B), Btn != UINT32_MAX ? d_read(Btn) : LOW);
             if (delta != 0 && callback != nullptr)
             {
                 callback(i, encoders[i].getValue(), delta);
             }
-            digitalWriteFast(CLK, LOW);
+            d_write(CLK, LOW);
             delay50ns();
         }
     }

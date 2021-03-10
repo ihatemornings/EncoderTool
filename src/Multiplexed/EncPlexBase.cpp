@@ -1,3 +1,4 @@
+#include "Arduino.h"
 #include "EncPlexBase.h"
 
 namespace EncoderTool

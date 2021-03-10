@@ -2,7 +2,7 @@
 
 #include "../EncoderBase.h"
 #include "Bounce2.h"
-#include "core_pins.h"
+#include "Arduino.h"
 
 namespace EncoderTool
 {
@@ -23,9 +23,9 @@ namespace EncoderTool
 
     void PolledEncoder::tick()
     {
-        int A = digitalReadFast(pinA);
-        int B = digitalReadFast(pinB);
-        int btn = pinBtn < NUM_DIGITAL_PINS ? digitalReadFast(pinBtn) : LOW;
+        int A = d_read(pinA);
+        int B = d_read(pinB);
+        int btn = pinBtn < (int)NUM_DIGITAL_PINS ? d_read(pinBtn) : LOW;
 
         update(A, B, btn);
     }
@@ -46,6 +46,6 @@ namespace EncoderTool
         }
 
         setCountMode(countMode);
-        EncoderBase::begin(digitalReadFast(pinA), digitalReadFast(pinB)); // set start state
+        EncoderBase::begin(d_read(pinA), d_read(pinB)); // set start state
     }
 } // namespace EncoderTool

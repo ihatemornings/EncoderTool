@@ -1,7 +1,7 @@
 #pragma once
 
 #include "EncPlexBase.h"
-#include "core_pins.h"
+#include "Arduino.h"
 
 namespace EncoderTool
 {
@@ -42,13 +42,13 @@ namespace EncoderTool
    {
       for (unsigned i = 0; i < encoderCount; i++)
       {
-         digitalWriteFast(S0, i & 0b0001);
-         digitalWriteFast(S1, i & 0b0010);
-         digitalWriteFast(S2, i & 0b0100);
-         digitalWriteFast(S3, i & 0b1000);
+         d_write(S0, i & 0b0001);
+         d_write(S1, i & 0b0010);
+         d_write(S2, i & 0b0100);
+         d_write(S3, i & 0b1000);
          delayMicroseconds(1);
 
-         int delta = encoders[i].update(digitalReadFast(A), digitalReadFast(B));
+         int delta = encoders[i].update(d_read(A), d_read(B));
          if (delta != 0 && callback != nullptr)
          {
             callback(i, encoders[i].getValue(), delta);

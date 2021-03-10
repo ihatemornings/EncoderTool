@@ -2,6 +2,7 @@
 
 #include "config.h"
 #include "EncoderBase.h"
+#include "Arduino.h"
 
 namespace EncoderTool
 {
