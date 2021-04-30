@@ -15,38 +15,44 @@ namespace EncoderTool
         Encoder() = default;
         inline ~Encoder();
 
-        inline void begin(int pinA, int pinB, CountMode = CountMode::quarter, int inputMode = INPUT_PULLUP);
-        inline void begin(int pinA, int pinB, encCallback_t cb, CountMode = CountMode::quarter, int inputMode = INPUT_PULLUP);
+        inline void begin(uint8_t pinA, uint8_t pinB, CountMode = CountMode::quarter, uint8_t inputMode = INPUT_PULLUP);
+        inline void begin(uint8_t pinA, uint8_t pinB, encCallback_t cb, CountMode = CountMode::quarter, uint8_t inputMode = INPUT_PULLUP);
 
      protected:
-        int pinA, pinB;
+        uint8_t pinNrA, pinNrB;
+        Pin*  pinA;
+        Pin*  pinB;
     };
 
     // Inline implementation ===============================================
 
-    void Encoder::begin(int pinA, int pinB, encCallback_t cb, CountMode countMode, int inputMode)
+    void Encoder::begin(uint8_t pinA, uint8_t pinB, encCallback_t cb, CountMode countMode, uint8_t inputMode)
     {
         begin(pinA, pinB, countMode, inputMode);
         attachCallback(cb);
     }
 
-    void Encoder::begin(int _pinA, int _pinB, CountMode countMode, int inputMode)
+    void Encoder::begin(uint8_t _pinA, uint8_t _pinB, CountMode countMode, uint8_t inputMode)
     {
-        pinA = _pinA;
-        pinB = _pinB;
-        pinMode(pinA, inputMode);
-        pinMode(pinB, inputMode);
+        pinNrA = _pinA;
+        pinNrB = _pinB;
+        pinMode(_pinA, inputMode);
+        pinMode(_pinB, inputMode);
+        pinA = new Pin(_pinA);
+        pinB = new Pin(_pinB);
 
-        attachInterruptEx(pinA,[](Encoder* THIS){THIS->update(d_read(THIS->pinA), d_read(THIS->pinB));}, this, CHANGE);
-        attachInterruptEx(pinB,[](Encoder* THIS){THIS->update(d_read(THIS->pinA), d_read(THIS->pinB));}, this, CHANGE);
+        attachInterruptEx(pinNrA,[](Encoder* THIS){THIS->update(THIS->pinA->get(), THIS->pinB->get());}, this, CHANGE);
+        attachInterruptEx(pinNrB,[](Encoder* THIS){THIS->update(THIS->pinA->get(), THIS->pinB->get());}, this, CHANGE);
 
         setCountMode(countMode);
-        EncoderBase::begin(d_read(pinA), d_read(pinB)); // set start state
+        EncoderBase::begin(pinA->get(), d_read(pinB->get())); // set start state
     }
 
     Encoder::~Encoder()
     {
-        detachInterrupt(pinA);
-        detachInterrupt(pinB);
+        detachInterrupt(pinNrA);
+        detachInterrupt(pinNrB);
+        delete pinA;
+        delete pinB;
     }
 } // namespace EncoderTool

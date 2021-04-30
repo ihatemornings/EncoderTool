@@ -77,7 +77,7 @@ namespace EncoderTool
         curState = (phaseA << 1 | phaseB) ^ invert;
     }
 
-    int EncoderBase::update(uint32_t phaseA, uint32_t phaseB, uint32_t btn)
+    int EncoderBase::update(uint_fast8_t phaseA, uint_fast8_t phaseB, uint_fast8_t btn)
     {
         if (button.update(btn))
         {
