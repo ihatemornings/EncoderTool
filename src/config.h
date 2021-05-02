@@ -7,7 +7,7 @@
 
 
 
-#include "Arduino.h"
+//#include "Arduino.h"
 
 
 extern void d_write(uint32_t pin, uint32_t val);
@@ -21,6 +21,17 @@ extern int32_t d_read(uint32_t pin, uint32_t val);
 
 #elif defined(ARDUINO_ARCH_SAMD)
 #include "platforms/samd.h"
+
+constexpr unsigned nrOfInterruptPins = EXTERNAL_NUM_INTERRUPTS;
+//constexpr unsigned nrOfInterruptPins = NUM_DIGITAL_PINS;
+
+//#include "platforms/pin.h"
+namespace EncoderTool
+{
+  using Pin = pin_t<uint32_t>;
+}
+
+#define PLAIN_ENC_CALLBACK
 
 #endif
 

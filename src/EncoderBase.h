@@ -40,7 +40,7 @@ namespace EncoderTool
             return ret;
         }
 
-        int update(uint_fast8_t phaseA, uint_fast8_t phaseB, uint_fast8_t btn = 0);
+        int update(uint_fast8_t phaseA, uint_fast8_t phaseB, uint_fast8_t btn = LOW);
 
      protected:
         EncoderBase() = default;

@@ -1,8 +1,8 @@
-#include "attachInterruptEx.h"
-#include "../config.h"
-#include "Arduino.h"
 #include <array>
 #include <utility>
+#include "attachInterruptEx.h"
+#include "../config.h"
+
 
 using namespace std;
 
@@ -15,8 +15,8 @@ namespace EncoderTool
 
     // ! We don't use <std::function> here (EncoderTool) to allow usage from smaller MCUs like TeensyLC !
 
-    cb_t callbacks[nrOfInterruptPins]; // storage for the callback functions
-    state_t states[nrOfInterruptPins]; // storage for the corresponding state variables
+    cb_t callbacks[NUM_DIGITAL_PINS]; // storage for the callback functions
+    state_t states[NUM_DIGITAL_PINS]; // storage for the corresponding state variables
 
     template <unsigned nr>
     constexpr void relay()
@@ -25,12 +25,12 @@ namespace EncoderTool
     }
 
     template <unsigned... nr>
-    constexpr array<void (*)(), nrOfInterruptPins> MakeRelays(index_sequence<nr...>)
+    constexpr array<void (*)(), NUM_DIGITAL_PINS> MakeRelays(index_sequence<nr...>)
     {
-        return array<void (*)(), nrOfInterruptPins>{relay<nr>...};
+        return array<void (*)(), NUM_DIGITAL_PINS>{relay<nr>...};
     }
 
-    constexpr auto relays = MakeRelays(make_index_sequence<nrOfInterruptPins>{}); // generates the relay function array at compile time
+    constexpr auto relays = MakeRelays(make_index_sequence<NUM_DIGITAL_PINS>{}); // generates the relay function array at compile time
 
     void attachInterruptEx(unsigned pin, cb_t callback, state_t state, int mode)
     {
