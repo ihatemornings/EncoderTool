@@ -1,8 +1,8 @@
 #pragma once
 
 #include "../EncoderBase.h"
-#include "Bounce2.h"
 #include "Arduino.h"
+#include "Bounce2.h"
 
 namespace EncoderTool
 {
@@ -17,22 +17,23 @@ namespace EncoderTool
 
      protected:
         int pinA, pinB, pinBtn = UINT32_MAX;
+        Pin *A, *B;
+        Pin* pBtn = nullptr;
     };
 
     // Inline implementation ===============================================
 
     void PolledEncoder::tick()
     {
-        int A = d_read(pinA);
-        int B = d_read(pinB);
-        int btn = pinBtn < (int)NUM_DIGITAL_PINS ? d_read(pinBtn) : LOW;
-
-        update(A, B, btn);
+        update(A->get(), B->get(), pBtn != nullptr? pBtn->get() : LOW);
     }
 
     void PolledEncoder::begin(int pinA, int pinB, int pinBtn, CountMode countMode, int inputMode)
     {
         this->pinBtn = pinBtn;
+        pinMode(pinBtn, inputMode);
+        pBtn = new Pin(pinBtn);
+        
         begin(pinA, pinB, countMode, inputMode);
     }
 
@@ -40,12 +41,15 @@ namespace EncoderTool
     {
         this->pinA = pinA;
         this->pinB = pinB;
-        for (uint8_t pin : {this->pinA, this->pinB, this->pinBtn})
+        for (uint8_t pin : {pinA, pinB})
         {
             pinMode(pin, inputMode);
         }
 
+        A = new Pin(pinA);
+        B = new Pin(pinB);
+
         setCountMode(countMode);
-        EncoderBase::begin(d_read(pinA), d_read(pinB)); // set start state
+        EncoderBase::begin(A->get(), B->get()); // set start state
     }
 } // namespace EncoderTool

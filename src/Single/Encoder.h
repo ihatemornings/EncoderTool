@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../EncoderBase.h"
+#include "../config.h"
 #include "attachInterruptEx.h"
 
 namespace EncoderTool
@@ -20,8 +21,7 @@ namespace EncoderTool
 
      protected:
         uint8_t pinNrA, pinNrB;
-        Pin*  pinA;
-        Pin*  pinB;
+        Pin* A, * B;
     };
 
     // Inline implementation ===============================================
@@ -38,21 +38,21 @@ namespace EncoderTool
         pinNrB = _pinB;
         pinMode(_pinA, inputMode);
         pinMode(_pinB, inputMode);
-        pinA = new Pin(_pinA);
-        pinB = new Pin(_pinB);
+        A = new Pin(_pinA);
+        B = new Pin(_pinB);
 
-        attachInterruptEx(pinNrA,[](Encoder* THIS){THIS->update(THIS->pinA->get(), THIS->pinB->get());}, this, CHANGE);
-        attachInterruptEx(pinNrB,[](Encoder* THIS){THIS->update(THIS->pinA->get(), THIS->pinB->get());}, this, CHANGE);
+        attachInterruptEx(pinNrA, [](Encoder* THIS) { THIS->update(THIS->A->get(), THIS->B->get()); }, this, CHANGE);
+        attachInterruptEx(pinNrB, [](Encoder* THIS) { THIS->update(THIS->A->get(), THIS->B->get()); }, this, CHANGE);
 
         setCountMode(countMode);
-        EncoderBase::begin(pinA->get(), d_read(pinB->get())); // set start state
+        EncoderBase::begin(A->get(), B->get()); // set start state
     }
 
     Encoder::~Encoder()
     {
         detachInterrupt(pinNrA);
         detachInterrupt(pinNrB);
-        delete pinA;
-        delete pinB;
+        delete A;
+        delete B;
     }
 } // namespace EncoderTool
