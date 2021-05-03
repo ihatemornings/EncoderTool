@@ -1,13 +1,6 @@
 #pragma once
 
-// un-comment the following line if you prefer plain function pointers for callbacks
-
-//================================================================================================================
-
-
-
-
-//#include "Arduino.h"
+#include <cstdint>
 
 
 extern void d_write(uint32_t pin, uint32_t val);
@@ -22,22 +15,11 @@ extern int32_t d_read(uint32_t pin, uint32_t val);
 #elif defined(ARDUINO_ARCH_SAMD)
 #include "platforms/samd.h"
 
-constexpr unsigned nrOfInterruptPins = EXTERNAL_NUM_INTERRUPTS;
-//constexpr unsigned nrOfInterruptPins = NUM_DIGITAL_PINS;
-
-//#include "platforms/pin.h"
-namespace EncoderTool
-{
-  using Pin = pin_t<uint32_t>;
-}
-
-#define PLAIN_ENC_CALLBACK
+#elif defined(ARDUINO_ARCH_ESP32)
+#include "platforms/esp32.h"
 
 #endif
 
-#if not defined(PLAIN_ENC_CALLBACK)
-#include <functional>
-#endif
 
 
 namespace EncoderTool
