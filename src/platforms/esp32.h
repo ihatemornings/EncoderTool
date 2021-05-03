@@ -7,8 +7,8 @@ namespace EncoderTool
     {
      public:
         Pin(uint_fast8_t _pin) : pin(_pin) {}
-        void set() const { digitalWriteFast(pin, HIGH); }
-        void clear() const { digitalWriteFast(pin, LOW); }
+        void set() const { digitalWrite(pin, HIGH); }
+        void clear() const { digitalWrite(pin, LOW); }
         uint_fast8_t get() const { return digitalRead(pin); }
 
      protected:
@@ -18,10 +18,10 @@ namespace EncoderTool
 
 inline void d_write(uint32_t pin, uint32_t val)
 {
-    digitalWriteFast(pin, val);
+    digitalWrite(pin, val);
 }
 
 inline int d_read(uint32_t pin)
 {
-    return digitalReadFast(pin);
+    return digitalRead(pin);
 }
