@@ -1,6 +1,6 @@
 #pragma once
-#include "EncoderButton.h"
 #include "config.h"
+#include "EncoderButton.h"
 
 namespace EncoderTool
 {

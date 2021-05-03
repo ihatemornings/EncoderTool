@@ -1,5 +1,5 @@
-#include "Arduino.h"
 #include "EncPlexBase.h"
+#include "Arduino.h"
 
 namespace EncoderTool
 {

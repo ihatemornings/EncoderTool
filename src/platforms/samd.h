@@ -1,5 +1,11 @@
 #pragma once
 
+//#define PLAIN_ENC_CALLBACK  // comment out if you prefer plain vanilla callbacks instead of std::function
+
+#if !defined(PLAIN_ENC_CALLBACK)
+#include <functional>
+#endif
+
 #include "Arduino.h"
 namespace EncoderTool
 {
@@ -39,10 +45,5 @@ inline int d_read(uint32_t pin)
     return digitalRead(pin);
 }
 
-#if defined(__SAMD51__)
 
-#    define PLAIN_ENC_CALLBACK
 
-#else
-
-#endif
