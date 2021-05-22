@@ -1,10 +1,9 @@
 #pragma once
 
-#include "../delay.h"
 #include "Bounce2.h"
 #include "EncPlexBase.h"
-#include "Arduino.h"
 #include <initializer_list>
+#include "Arduino.h"
 
 namespace EncoderTool
 {
@@ -36,7 +35,7 @@ namespace EncoderTool
         pinMode(Btn, INPUT);
         pinMode(LD, INPUT);
         pinMode(CLK, INPUT);
-        
+
         // for (unsigned pin : {A, B, Btn, LD, CLK})
         // {
         //     pinMode(pin, INPUT);
