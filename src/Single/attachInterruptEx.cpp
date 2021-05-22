@@ -1,11 +1,9 @@
 #include "attachInterruptEx.h"
-//#include "../config.h"
 #include "Arduino.h"
-
 
 namespace EncoderTool
 {
-    constexpr unsigned N = 4;
+    constexpr unsigned N = EXTERNAL_NUM_INTERRUPTS;
 
     namespace // private
     {
@@ -16,42 +14,64 @@ namespace EncoderTool
         relay_t relays[N];       // pointers to functions relaying calls from pin interrupts to the callback functions
         uint8_t pins[N];         // keep track which pin is attached to which callback
 
-        // Functions to be attached to the pin interrupts. They relay the ISR to the actual callback
-        template <unsigned nr>
-        void relay()
-        {
-            callbacks[nr](states[nr]);
-        }
-
         // intialize the array of relay functions recursively
-        template <size_t N>  __attribute__((always_inline))
-        inline void initRelays()
+        template <size_t N>
+        void initRelays()
         {
             pins[N]   = UINT8_MAX;
-            relays[N] = relay<N>;
+            relays[N] = [] { callbacks[N](states[N]); }; // lambda expression relaying the pin ISR to the actual callback function
             initRelays<N - 1>();
         }
 
-        template <> __attribute__((always_inline))
-        inline void initRelays<0>()
+        template <>
+        void initRelays<0>()
         {
             pins[0]   = UINT8_MAX;
-            relays[0] = relay<0>;
+            relays[0] = [] { callbacks[0](states[0]); };
         }
 
         bool initialized = false;
         void initialize()
         {
-            Serial.println("initialize");
             initRelays<N - 1>();
             initialized = true;
         }
 
     } // private namespace
 
+    relay_t getFunc(callback_t callback, Encoder* state)
+    {
+        if (!initialized) initialize();
+
+        for (unsigned i = 0; i < N; i++)
+        {
+            if (callbacks[i] == nullptr)
+            {
+                callbacks[i] = callback;
+                states[i]    = state;
+                return relays[i];
+            }
+        }
+        return nullptr;
+    }
+
+    void releaseFunc(relay_t r)
+    {
+        for (unsigned i = 0; i < N; i++)
+        {
+            if (relays[i] == r)
+            {
+                callbacks[i] = nullptr;
+                return;
+            }
+        }
+    }
+
     bool attachInterruptEx(unsigned pin, callback_t callback, Encoder* state, int mode)
     {
-        Serial.printf("attach %d\n", pin);
+        auto r = getFunc([](Encoder*) { Serial.println("asdf"); }, nullptr);
+
+
         if (!initialized) initialize();
 
         for (unsigned i = 0; i < N; i++)
@@ -62,11 +82,9 @@ namespace EncoderTool
                 callbacks[i] = callback;
                 states[i]    = state;
                 attachInterrupt(pin, relays[i], mode);
-                Serial.printf("ch: %d OK\n", i);
                 return true;
             }
         }
-        Serial.printf("ERR\n");
         return false;
     }
 

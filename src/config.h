@@ -21,6 +21,9 @@ extern int32_t d_read(uint32_t pin, uint32_t val);
 #endif
 
 
+#if !defined(PLAIN_ENC_CALLBACK)
+#    include <functional>
+#endif
 
 namespace EncoderTool
 {

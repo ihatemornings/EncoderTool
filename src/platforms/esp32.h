@@ -20,6 +20,13 @@ namespace EncoderTool
      protected:
         const uint8_t pin;
     };
+
+
+    inline void delay50ns()  // should be optimized
+    {
+        delayMicroseconds(1);
+    }
+
 };
 
 inline void d_write(uint32_t pin, uint32_t val)
